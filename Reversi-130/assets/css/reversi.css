@@ -1,8 +1,53 @@
+:root[data-theme="light"] {
+  --color-primary: #eb2f64;
+  --color-primary-light: #ff3366;
+  --color-primary-dark: #ba265d;
+  --color-grey-light-1: #faf9f9;
+  --color-grey-light-2: #f4f2f2;
+  --color-grey-light-3: #f0eeee;
+  --color-grey-light-4: #ccc;
+  --color-yellow-darker: rgb(204, 153, 12);
+  --color-black: rgb(3, 3, 3);
+  --color-yellow: #d502ff;
+  --color-grey-dark-1: #333;
+  --color-grey-dark-2: #777;
+  --color-grey-dark-3: #999;
+  --color-grey-dark-4: #535151;
+  --shadow-dark: 0 2rem 6rem rgba(0, 0, 0, 0.3);
+  --color-blue: rgb(0, 204, 255);
+  --color-white: #fff;
+  --board-option-1: rgb(0, 204, 255);
+  --board-grid: rgb(247, 0, 255);
+}
+:root[data-theme="dark"] {
+  --color-primary: #eb2f64;
+  --color-primary-light: #ff3366;
+  --color-primary-dark: #ba265d;
+  --color-grey-light-1: #faf9f9;
+  --color-grey-light-2: #f4f2f2;
+  --color-grey-light-3: #f0eeee;
+  --color-grey-light-4: #ccc;
+  --color-yellow-darker: rgb(204, 153, 12);
+  --color-black: rgb(3, 3, 3);
+  --color-yellow: #976000;
+  --color-grey-dark-1: rgb(221, 156, 156);
+  --color-grey-dark-2: #777;
+  --color-grey-dark-3: #999;
+  --color-grey-dark-4: #535151;
+  --shadow-dark: 0 2rem 6rem rgba(0, 0, 0, 0.3);
+  --color-blue: rgb(0, 204, 255);
+  --color-white: #fff;
+  --board-option-1: rgb(115, 255, 0);
+  --board-grid: rgb(0, 0, 0);
+}
 body {
   padding: 0;
   margin: 40px;
   font-family: "Roboto", sans-serif;
   font-size: 12px;
+  background-color: var(--color-grey-dark-1);
+
+  height: 120vh;
 }
 
 /* Typography */
@@ -12,7 +57,6 @@ h1 {
 }
 a {
   color: #000;
-  text-decoration: underline;
 }
 a:hover {
   text-decoration: none;
@@ -34,7 +78,7 @@ tr {
 }
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--board-grid);
 }
 .board-corner {
   border-width: 0px 1px 1px 0;
@@ -45,13 +89,119 @@ th {
   background: #eee;
 }
 td {
-  padding: 3px 3px 0;
-  background: #fffed9;
+  padding: 1rem;
+  background-color: var(--board-option-1);
 }
 
 /* Status messages */
-.error {
+.err {
   padding: 2px 10px;
-  background: #f4e6e6;
-  border: 2px solid #f4d0d0;
+  background-color: var(--color-blue);
+  border: 2px solid var(--color-white);
+}
+.game-layout {
+  display: flex;
+  justify-content: center;
+}
+.game_options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: var(--color-blue);
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 20px;
+  width: 30%;
+}
+.game_container {
+  display: flex;
+  justify-content: center;
+  background-color: var(--color-yellow);
+  margin: 1rem;
+  border-radius: 20px;
+}
+.options_header {
+  font-size: 1.5rem;
+  text-align: center;
+}
+.options_background {
+  font-size: 1rem;
+  text-align: center;
+  text-decoration: underline;
+}
+#color-change {
+  background-color: var(--color-white);
+  cursor: pointer;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+}
+.options_board {
+  font-size: 1rem;
+  text-align: center;
+  text-decoration: underline;
+}
+.stat_container {
+  background-color: var(--color-yellow);
+  border-radius: 20px;
+  padding: 10px;
+}
+.stat_header {
+  text-decoration: underline var(--color-blue);
+  text-align: center;
+}
+.stat_homeLink {
+  font-size: 1rem;
+  text-align: center;
+}
+.p_err {
+  font-size: 1rem;
+}
+.p_stalemate {
+  font-size: 1rem;
+  text-decoration: underline var(--color-blue);
+}
+.p_Move_turn {
+  font-size: 1rem;
+  text-decoration: underline var(--color-blue);
+}
+.p_info {
+  font-size: 0.8rem;
+}
+.p_Leader {
+  font-size: 0.8rem;
+  background-color: var(--color-white);
+  border-radius: 10px;
+  padding: 5px;
+}
+.game_select {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: aquamarine;
+  height: 50vh;
+}
+.game_reason {
+}
+.reason_text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: underline;
+}
+.p_game_opt {
+  font-size: 1rem;
+}
+.button-sub {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 15px;
+  background-color: #ff9d82;
+  border: none;
+  cursor: pointer;
+}
+.num {
+  color: #ff9d82;
 }

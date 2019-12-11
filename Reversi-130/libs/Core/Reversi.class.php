@@ -1,141 +1,152 @@
 <?php
 class Core_Reversi
-{
+{//so this file is the core of the game, all functionality is checked in this file
     /**
-     * How big is our grid? Minimum of 9, maximum of 19. We want min 4, max 8
+     * we will decide our grid size, we have 4 6 8 available sizes
      *
      * @var int
      * @access private
      */
-    private $_gridSize;
+    private $_gridSize;//only accessable to the class
     
     /**
-     * The board in array form. Each Y is a an array containing an array of X.
-     *
+     * 
+     * we store the board coordinates in an array where the y's hold arrays of x's
      * @var array
      * @access private
      */
-    private $_boardContent;
+    private $_boardContent;//hold the content arrays of the board
     
     /**
-     * The board string after a turn has been played.
-     *
+     * 
+     * //we construct the new string after each move has been played
      * @var string
      * @access private
      */
-    private $_boardContentAfterTurn;
+    private $_boardContentAfterTurn;//to hold the updated string of board contents
     
     /**
-     * The person who has just played this move
-     *
+     * 
+     * Who is playing? that's what this is for
      * @var string
      * @access private
      */
-    private $_turnInPlay;
+    private $_turnInPlay;//we need to keep track of the player in motion
     
     /**
-     * The X coord that is being played.
-     *
+     * 
+     *keep track of the x coordinate where piece is
      * @var mixed
      * @access private
      */
-    private $_x = false;
+    private $_x = false;//we set default as false cause each space should be empty until placed
     
     /**
-     * The Y coord that is being played.
-     *
+     * 
+     * keep track of the y coordinate where piece is
      * @var mixed
      * @access private
      */
-    private $_y = false;
+    private $_y = false;//we set default as false cause each space should be empty until placed
     
     /**
-     * How many disks were flipped?
-     *
+     * 
+     * we need to keep track of how many pieces were flipped per move
      * @var bool
      * @access private
      */
-    private $_disksFlipped = 0;
+    private $_disksFlipped = 0;//initially set as zero cause no move has been played and move not yet been played
     
     /**
-     * Set the size of the grid, prepare the board and make a move.
-     *
+     * 
+     * we will begin by setting the size of the grid based on based in variable gridsize
      * @param $gridSize int 
      * @access public
      */
     public function __construct($gridSize) {
-        // Setup the board
+        // we will first set up the board with the board contents and initialize to passed in girdSize ex). 4 6 8.
         $this->setGridSize($gridSize);
         $this->setCoords();
         $this->setBoardString();
         $this->setTurn();
         $this->setBoardContent();
+        //initalizing the first move and setting who will go first
         
-        // Try and process the move
+        //we will set the move and see if valid
         $this->doTurn();
         
-        // Cleanup the move just played
+        
+        //call the funciton to essentially clean the grid and reintialize and see the array.
         $this->doCleanup();
     }
     
     /**
-     * Set the grid size.
+     * we need to grab the passed in grid size from the user and by using the session value set
      *
      * @param $gridSize int
      * @access private
      */
     private function setGridSize($gridSize) {
-        // Set the grid size
+        
+        //initialize the grid size
         $this->_gridSize = (int)$gridSize;
         
-        // Is it too big or too small?
-        if ($this->_gridSize < 4) { // < 4
-            // Too small
-            $this->_gridSize = 4;
-        } else if ($this->_gridSize > 8) { // > 8
-            // Too big
+        
+        //we have to check and see if the grid size passed in will fit our grid option, minninum of 4 max of 8 and in between 6
+        if ($this->_gridSize < 4) { // less than 4
+            // falls under size
+            $this->_gridSize = 4;//give the grid size of 4 to the board game
+        } else if ($this->_gridSize > 8) { // greater than 8
+            // goes over size
             $this->_gridSize = 8;
         }
     }
-    
+    //////////////////////////////////////////////////////////////////////////////////////
     /**
-     * Set the coords that the player wishes to play.
-     *
+     * 
+     * so we need the (x,y) of the piece the player want to play and check if the move is valid or invalid
      * @access private
      */
     private function setCoords() {
-        // X coord
+        // (X,y)
         if (isset($_GET['x'])) {
             $this->_x = $_GET['x'];
         }
         
-        // Y coord
+        // (x,Y)
         if (isset($_GET['y'])) {
             $this->_y = $_GET['y'];
         }
     }
     
     /**
-     * Set the board string.
-     *
+     * 
+     * we need to create the string that will hold the board contents and see where pieces are saved.
      * @access private
      */
     private function setBoardString() {
-        // Do we have a board to use already?
+        
+        //when we keep refreshing the page we check and see if there is already a board in play 
         if (isset($_GET['board'])) {
-            // Yes, use that
+            
+            //if there is a board we will be using the contents of the board string to set the board and continue
             $this->_boardContent = $_GET['board'];
         } else {
-            // No, create a fresh board
+            
+            //if there is no board we will create the board contents with new intialized contents
             $this->_boardContent = str_repeat('-', ($this->_gridSize * $this->_gridSize));
 
-            // Set the default pieces in the center of the board
-            $startX = ($this->_gridSize / 2) - 1;
-            $startX = ($startX * $this->_gridSize) + $startX;
+            
+            //so when we start with the fresh game of reversi we need to set the starting pieces for the 
+            //game board... Remember reversi always starts with 2 white and 2 black in the center of board opp. of eachother
+            $startX = ($this->_gridSize / 2) - 1;//middle of the board
+            $startX = ($startX * $this->_gridSize) + $startX;//set the piece
             $this->_boardContent = substr_replace($this->_boardContent, 'wb', $startX, 2);
             $this->_boardContent = substr_replace($this->_boardContent, 'bw', ($startX + $this->_gridSize), 2);
         }        
     }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     /**
      * Sets which player is currently playing, and which is playing after this turn.

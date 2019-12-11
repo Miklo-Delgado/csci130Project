@@ -237,7 +237,11 @@ if ($conn->query($sql) === TRUE) {
 }
 
 $conn->close();
-
+session_start();
+if(isset($_SESSION['email'])){
+    $_SESSION = array();
+    session_destroy();
+}
 ?>
 
 <p><a href="/Reversi-130">Homepage</a></p>
