@@ -149,189 +149,213 @@ class Core_Reversi
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     /**
-     * Sets which player is currently playing, and which is playing after this turn.
-     *
-     * Note: We think the color is the person who has *just* gone. At the start this
-     * will be white (as they will have placed the last starting disk), which means
-     * it is theor turn with black to go next.
-     *
+     * 
+     * //this will store the current player and set what player will be next unless skipped.
+     * //so think of this in real time, in real time the person who set the last starting disk is
+     * //technically white so black will go first.
      * @access private
      */
     private function setTurn() {
-        // Set to black if there is no turn set, or it is blacks turn
+        
+        //starting off will be black cause it their turn first
         $this->_turnInPlay = ! isset($_GET['turn']) || $_GET['turn'] == 'b'
             ? 'b'
             : 'w';
     }
     
     /**
-     * Use the board string to create the grid.
-     *
+     * //we are setting the board content based on the board data from the string.
      * @access private
      */
     public function setBoardContent() {
-        // Set the board string encase no move is made
+        
+        //we keep track of the board string in the case of no action made.
         $this->_boardContentAfterTurn = $this->_boardContent;
 
-        // Split string into valid X coord lengths
+        
+        //based on the move we have to convert the string into valid (X,y).
         $this->_boardContent = str_split($this->_boardContent, $this->_gridSize);
         
-        // Loop over each Y coord...
+        
+        //go throught the grid and set the appropriat (X,y) for each given (x,Y).
         foreach ($this->_boardContent as $index => $line) {
-            // ... and insert each X coord
+            
+            //we will be at the appropriate space so we will enter in the (X,y).
             $this->_boardContent[$index] = str_split($this->_boardContent[$index], 1);
         }
     }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     /**
-     * Start the turn.
+     * Action will commence 
+     * so for an action to commence a few criteria must be met first
+     * we have to see if all valid coordinats are set and see if they are on the grid or outside the grid
+     * and to see if the desired space or any space on the grid is empty or not.
+     * 
      *
-     * 1. Need to make sure the coords are set.
-     * 2. Are the coords valid, or are they outside the grid?
-     * 3. Make sure the disk is empty.
-     *
-     * if those conditions are met then we can continue with the move.
-     * Set the disk first, then start the traversing from top to top-left.
+     * if all is in order then we allow the player to commence with the move.
+     * onnce the player has 'clicked' to place the piece we will traverse through the grid.
      *
      * @access public
      */
     public function doTurn() {
-        // Do we need to make a move?
-        if ($this->_x === false || $this->_y === false) {
+        //is the action an action to where we have update the setting
+        if ($this->_x === false || $this->_y === false) {//we are checking the (X,Y) to see if they exist
             return false;
         }
         
-        // Are the coords valid?
+    
+        //next we wanna see if the placed piece will be valid or not.
         else if (! isset($this->_boardContent[$this->_y][$this->_x])) {
-            return false;
+            return false;//checking wiht hth board contents and seeing if the desired space is valid
         }
         
-        // Is there already a disk in this coord?
+        
+        //we will chekc witht the boardcontent string to make sure that the desired space is not occupied.
         else if ($this->_boardContent[$this->_y][$this->_x] != '-') {
             return false;
         }
 
-        // Place the users disk on the board
+        
+        //if all other conditions have been met then we wil be allowing player to commence witht the move.
         $this->_boardContent[$this->_y][$this->_x] = $this->_turnInPlay;
         
-        // Did we take any of our opponants disks?
-        $this->doTraverse(0, -1);  // Top
-        $this->doTraverse(1, -1);  // Top right
-        $this->doTraverse(1, 0);   // Right
-        $this->doTraverse(1, 1);   // Bottom right
-        $this->doTraverse(0, 1);   // Bottom
-        $this->doTraverse(-1, 1);  // Bottom left
-        $this->doTraverse(-1, 0);  // Left
-        $this->doTraverse(-1, -1); // Top left
+        
+        //as always when the player makes his/her move, we will need to check if the user took over any enemy pieces.
+        $this->doTraverse(0, -1); // We will check the top of the chosen place
+        $this->doTraverse(1, -1);  // We will check the tiop right of the chosen place. 
+        $this->doTraverse(1, 0);  // We will check the right of the chosen place.
+        $this->doTraverse(1, 1);  // We will check the bottom right of the chosen place.
+        $this->doTraverse(0, 1);   // We will check the bottom of the chosen place. 
+        $this->doTraverse(-1, 1);   // We will check th ebottom left of the chosen place. 
+        $this->doTraverse(-1, 0); // We will check the Left of the chosen place . 
+        $this->doTraverse(-1, -1); // We will finally check the top left of the chosen place.
     }
-    
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * Traverse the board to see if we can take any of our opponants disks.
-     *
-     * To traverse the board we can add, substract, or do nothing with each X and Y coord.
-     * Keep traversing until we reach an empty position, a wall, or our own disk. Once
-     * reached an end, traverse back down the coords replacing the disks with our own.
-     *
-     * @param $xDiff int
-     * @param $yDiff int
+     *okay so no using the board contents from the previous traversing we will see if we can get enemys
+     *so when we are traversing we are going to essentially do 3 things, we are going to keep chekcing while taking over
+     *enemy disks by adding to the (X,Y), subtracting from (X,Y) or until we reach an edge 'e' or one of our own.
+     * @param $xDiff int the difference
+     * @param $yDiff int the difference
      * @access private
      */
     public function doTraverse($xDiff, $yDiff) {
-        // Set variables
+       
+        //we will initialize the vars to the (X,Y)
         $x = $this->_x;
         $y = $this->_y;
         $continue = true;
         
-        // Begin the loop
+       
+        //we will start traversing through the grid
         do {
-            // Work out the new coords to test
+            
+            //set the testing vars to see if valid move has been made
             $x += $xDiff;
             $y += $yDiff;
             
-            // What is in the next position?
+            
+            //check surrounding positions of the piece set.
             $next = isset($this->_boardContent[$y][$x])
                 ? $this->_boardContent[$y][$x]
-                : 'e'; // Edge
+                : 'e'; // just stated in other files for consitiency we 'e' stands for edge.
 
-            // Have we hit an edge or an empty position?
+         
+            //check surrounding areas and see what next to placed piece.
             if ($next == 'e' || $next == '-') {
                 $continue = false;
             }
             
-            // Have we reached our own disk colour?
+           
+            //we need to keep checking the loop until we have reached one of our own.
             else if ($next == $this->_turnInPlay) {
-                // We are currently at our own disk, move back one so we are at our
-                // .. last free (potentially) disk.
+                
+               //have to keep chekcing but we are currently at the our own spot.
                 if ($xDiff > 0) { $x--; } else if ($xDiff < 0) { $x++; }
                 if ($yDiff > 0) { $y--; } else if ($yDiff < 0) { $y++; }
                 
-                // Are we where we started?
+                
+                //we must check if the we have gone full circle back to starting positon
                 while ($x != $this->_x || $y != $this->_y) {
-                    // Change this disk to the player who just moved
+                    
+                    //we need to get the disk that just moved and change the color
                     $this->_boardContent[$y][$x] = $this->_turnInPlay;
                     
-                    // Set the number of disks this flipped
+                    
+                    //this will output the number of disks that were flipped and output to the user.
                     $this->_disksFlipped++;
                     
-                    // Move back one coord to begin another replacement
+                   
+                    //we need to keep backtracking to the original space until full cirle.
                     if ($xDiff > 0) { $x--; } else if ($xDiff < 0) { $x++; }
                     if ($yDiff > 0) { $y--; } else if ($yDiff < 0) { $y++; }
                 }
                 
-                // We have converted all of the possible disks, exit the traverse
+                
+                //we have offically gone full circle so we will leave the loop because all potential enemy disks that were flipped
+                //have been flipped
                 $continue = false;
             }
         } while ($continue);
     }
-    
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * We have finished the turn, so need to run some post-turn sanity checks.
+    
+     *
+     * after a turn has been made we have to make sure the move was actually a valid one, becaseu if the move
+     * was invalid then the pice that was just set have to be removed from the board so it doesnt stay and then we
+     * force the player to make the another move until the valid one is made which will meet future conditions 
      * 
-     * If there were no disks flipped then it was an invalid turn - the same
-     * colour that just went needs to go again.
-     *
-     * If it was an invalid move then we need to replace the just-set-disk with
-     * an empty disk so it doesn't become a permanent fixture on the board.
-     *
-     * The board is now valid, create the board string for the empty disk links.
-     *
      * @access private
      */
     private function doCleanup() {
-        // Did we actually flip any disks (if we did then it must be valid)
+        
+        //if we are chekcing to see the disks that were flipped then it was valid.
+
         if ($this->_disksFlipped >= 1) {
             $this->_turnInPlay = $this->_turnInPlay == 'b'
-                ? 'w'
+                ? 'w'//type of pieces
                 : 'b';
         }
         
-        // Were the coords set, but was an invalid move?
+        
+        //the (X,Y) were set on the field but the move was invalid so we recycle and have player go again
         else if (! $this->getIsValidMove()) {
-            // Reset the disk
+           
+            //reset the move and have player go again
             $this->_boardContent[$this->_y][$this->_x] = '-';
         }
         
-        // All moves have finished, save the board string
+        
+        //move was made and turn has been set so we update the board content
         $this->_boardContentAfterTurn = $this->getBoardAfterTurn();
     }
     
     /**
-     * Was the move valid?
+     * we need to check if the move was valid
      *
-     * Was only invalid if coords were set and no disks were flipped.
-     * 
+     * you made a move that didnt flip any pieces so we want the player to flip pieces
      * @access private
      * @return boolean
      */
     private function getIsValidMove() {
-        // If the user made a move and the disks flipped were none
+        
+        //we want the player to flip pieces but if the move they made didnt flip any we check
         return isset($this->_x) && $this->_disksFlipped <= 0
             ? false
             : true;
     }
 
     /**
-     * Compress the board down into a string.
+     * 
+     * 
+     * here we will set the board string based on the contents of the board.
      *
      * @access public
      * @return string
@@ -341,35 +365,39 @@ class Core_Reversi
         for ($y = 0; $y < $this->_gridSize; $y++) {
             $board .= implode($this->_boardContent[$y], '');
         }
-        return $board;
+        return $board;//the board string
     }
 
     /**
-     * Output the board after the move.
-     *
+     * we want to export the board string once the move has finsished
      * @access private
      */
     public function getBoard() {
-        // Start output
+        
+        //begin the output of the board
         $output = '<tr><td class="board-corner">&nbsp;</td>';
         
-        // Set each top row
-        $letter = 'a';
+      
+        //set up the rows for the board contents
+        $letter = 'a';//in this section we are creating the table with the proper pieces in the place
         for ($x = 0; $x < $this->_gridSize; $x++) {
             $output .= '<th>' . strtoupper($letter++) . '</th>';
         }
         
-        // End the top row
+       
+        //end of the rown
         $output .= '</tr>';
         
-        // Loop through each Y coord
+        
+        //we have to go through the (x,y)'s to set appropreiat (x,Y) 
         for ($y = 0; $y < $this->_gridSize; $y++) {
-            // Start the row
+            //set up the rows for the board contents
             $output .= '<tr><th>' . ($y + 1) . '</th>';
             
-            // Loop through each X coord            
+            //we have to go through the (x,y)'s to set appropreiat (X,y)            
             for ($x = 0; $x < $this->_gridSize; $x++) {
-                // Which disk do we need to place?
+                
+                //now we have to check an see which piece are we using what piece are flipping and not flipping
                 switch ($this->_boardContent[$y][$x]) {
                     case 'b' : $output .= '<td><img src="./assets/img/disk-b.png" alt="B" class="disk-black" rel="'.$x.':'.$y.'" /></td>'; break;
                     case 'w' : $output .= '<td><img src="./assets/img/disk-w.png" alt="W" class="disk-white" rel="'.$x.':'.$y.'" /></td>'; break;
@@ -377,44 +405,36 @@ class Core_Reversi
                 }
             }
             
-            // End the row
+            //end of the rown
             $output .= '</tr>';
         }
         
-        // Return the output
+        //send the output string to the board contents
         return $output;
     }
     
     /**
-     * Get the player playing now.
+     * we have to check what user/player is currently playing and output that 
      *
      * @access public
      * @return string
      */
     public function getTurn() {
-        return $this->_turnInPlay;
+        return $this->_turnInPlay;//we will see who is playing
     }
     
     /**
-     * Returns the scores and empty disks.
-     * 
-     * <code>
-     * Array(
-     *     ['white'] => 123,
-     *     ['black'] => 321,
-     *     ['empty'] => 213
-     * )
-     * </code>
+     *this is tell the player(s) what the score is and how many moves left based on available spaces
      * 
      * @access public
      * @return array
      */
     public function getScore() {
-        // Get black and white
+        // set the players and get them
         $whiteCount = substr_count($this->_boardContentAfterTurn, 'w');
         $blackCount = substr_count($this->_boardContentAfterTurn, 'b');
         
-        // Return scores
+        // returns scores for each player
         return array(
             'white' => $whiteCount,
             'black' => $blackCount,
@@ -423,31 +443,35 @@ class Core_Reversi
     }
     
     /**
-     * Who is winning? Is it a tie?
+     * we chekc who is in the lead
      *
      * @access public
      * @return string
      */
     public function getGameStatus() {
-        // Get the stats
+        
+        //return the stats
         $stats = $this->getScore();
         
-        // Is black winning?
+        
+        //is the first player winning
         if ($stats['black'] > $stats['white']) {
             return 'b';
         }
         
-        // Is white winning?
+        
+        //is the guest winning
         else if ($stats['white'] > $stats['black']) {
             return 'w';
         }
         
-        // It must be a tie
+        
+        //if neiether are winning than its a tie
         return 'tie';
     }
 
     /**
-     * Get how many discs this flipped.
+     * how many pieces did the move flip, we will return it
      * 
      * @access public
      * @return int
@@ -457,14 +481,13 @@ class Core_Reversi
     }
 
     /**
-     * Returns the full name of a colour
-     * 
+     * we will giv ethe color of who is winning
      * @access public
      * @param $uppercaseFirstLetter boolean
      * @return string
      */
     public function getFullColor($color, $uppercaseFirstLetter = false) {
-        // Work out colour
+        //whos is who and who is winning
         $color = $color == 'w' ? 'white' : 'black';
         
         // And return

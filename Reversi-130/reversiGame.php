@@ -121,22 +121,7 @@ else{
     <script src="./assets/js/darkMode.js"></script>
 </head>
 <body>
-<div class="game_container">
-        <div class="game_options">
-<p class="options_header">Change the style of the Layout!</p>
-<p class="options_background">BACKGROUND:</p>
-    <button id="color-change" type="button" onclick="changeBodyBg('aqua');">aqua</button>
-    <button id="color-change" type="button" onclick="changeBodyBg('yellow');">Yellow</button>
-    <button id="color-change" type="button" onclick="changeBodyBg('orange');">Orange</button>
 
-<p class="options_board">PRESET BOARD CUSTOM:</p>
-<span>
-        DarkMode
-        <input type="checkbox" id="tex" />
-      </span>
-
-</div>
-    </div>
     <div class="game-layout">
         <div style="float:left">
         <table id="board">
@@ -180,6 +165,33 @@ else{
     
         <?php
         
+        if(isset($_SESSION['email'])){
+            $servername = "localhost"; // default server name
+            $username = "delgado"; // user name that you created
+            $password = "XcgVyWIwYg6paZFb"; // password that you created
+            $dbname = "mydb";
+            $email = $_SESSION['email'];
+            $conn = new mysqli($servername, $username, $password, $dbname);
+
+            if($reversi->getFullColor($reversiStatus, true) == 'black'){
+            $winner = $_SESSION['email'] . ' won with '. $reversiScore['white']. '-'. $reversiScore['black'];
+            $sql = "INSERT INTO Games (playerEmail, dur, score) VALUES ('$email', '$game_time', '$winner')";
+            }
+            else{
+                $winner = $_SESSION['email'] . ' guest won with '. $reversiScore['white']. '-'. $reversiScore['black'];
+                $sql = "INSERT INTO Games (playerEmail, dur, score) VALUES ('$email', '$game_time', '$winner')";
+            }
+            if ($conn->query($sql) === TRUE) {
+                echo "New game added successfully<br>";
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error ."<br>";
+            }
+            //echo $winner;
+        }
+
+
+
+
     } else { ?>
     
             <!-- Game is in progress //-->
@@ -216,7 +228,22 @@ else{
         <?php } ?>
     </div>
     </div>
-    
+    <div class="game_container">
+        <div class="game_options">
+<p class="options_header">Change the style of the Layout!</p>
+<p class="options_background">BACKGROUND:</p>
+    <button id="color-change" type="button" onclick="changeBodyBg('aqua');">aqua</button>
+    <button id="color-change" type="button" onclick="changeBodyBg('yellow');">Yellow</button>
+    <button id="color-change" type="button" onclick="changeBodyBg('orange');">Orange</button>
+
+<p class="options_board">PRESET BOARD CUSTOM:</p>
+<span>
+        DarkMode
+        <input type="checkbox" id="tex" />
+      </span>
+
+</div>
+    </div>
     
 </body>
 </html>
