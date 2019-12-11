@@ -294,6 +294,10 @@
                 </div>
             </div>
             <div class="foot_right">
+
+                <div class="foot_link">
+                    <a href="assets\login\phpmysql.php">Create Database/reset database</a>
+                </div>
                 <div class="foot_link">
                     <a href="#">Terms & Conditions</a>
                 </div>

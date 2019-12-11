@@ -94,11 +94,9 @@ else{
         <h1>Reversi stats</h1>
 
         <?php if(isset($_SESSION['email'])){ 
-            $userSignedIn = true;
             ?>
         <p> The user <?php echo $_SESSION['email']; ?> is playing with a friend </p>
-        <?php } else{ 
-            $userSignedIN = false; ?>
+        <?php } else{   ?>
             <p> Guest users are playing <p>
         <?php } ?>
 
@@ -128,11 +126,8 @@ else{
     
         <?php
         
-    } else { 
-            
-            $time_post = microtime_float();
-            $game_time = $time_post - $_SESSION['time_pre'];
-            ?>
+    } else { ?>
+    
             <!-- Game is in progress //-->
             <!-- Is it a tie? //-->
             <?php if ($reversiStatus == 'tie') { ?>

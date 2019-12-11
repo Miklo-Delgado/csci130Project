@@ -17,7 +17,7 @@ $sql = "CREATE TABLE Games (
     )";
 
 if ($conn->query($sql) === TRUE) {
-    echo "Table Person created successfully<br>";
+    echo "Table Games created successfully<br>";
 } else {
     echo "Error creating table: " . $conn->error ."<br>";
 }
