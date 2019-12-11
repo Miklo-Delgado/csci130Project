@@ -1,0 +1,14 @@
+{
+  "name": "reversi-master",
+  "version": "1.0.0",
+  "description": "reversi project",
+  "main": "(home_page.html)",
+  "scripts": {
+    "compile:sass": "node-sass assets/sass/main.scss assets/css/homepage.css -w"
+  },
+  "author": "James and Miklo",
+  "license": "ISC",
+  "devDependencies": {
+    "node-sass": "^4.13.0"
+  }
+}
